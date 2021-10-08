@@ -1,25 +1,13 @@
 package handlers
 
 import (
-	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	twilio "github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 	"io/ioutil"
 	"net/http"
-	"os"
+	"net/url"
 )
-
-type TwilioPayload struct {
-	MessageSid string
-	SmsSid string
-	AccountSid string
-	MessagingServiceSid string
-	From string
-	To string
-	Body string
-	NumMedia int
-}
 
 
 func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,22 +24,20 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var twilioPayload TwilioPayload
-	err = json.Unmarshal(reqBody, &twilioPayload)
+	queryVals, err := url.ParseQuery(string(reqBody))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.WithFields(log.Fields{
 			"error": err,
-			"body": string(reqBody),
 		}).Warn("invalid payload")
 		return
 	}
 
 	client := twilio.NewRestClient()
 	params := &openapi.CreateMessageParams{}
-	params.SetTo(os.Getenv(twilioPayload.From))
-	params.SetFrom(os.Getenv(twilioPayload.To))
-	params.SetBody("Hello from Golang!")
+	params.SetTo(queryVals.Get("From"))
+	params.SetFrom(queryVals.Get("To"))
+	params.SetBody("Hello " + queryVals.Get("Body"))
 
 	_, err = client.ApiV2010.CreateMessage(params)
 	if err != nil {
