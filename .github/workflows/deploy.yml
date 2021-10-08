@@ -1,0 +1,68 @@
+name: Deploy Recipe Finder Bot
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: ./azure-function
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout github action"
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: '0'
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.26.0
+        id: bump-version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: main
+          VERBOSE: false
+
+      - name: Remove Leading v From Version Number
+        shell: bash
+        run: |
+          # Retreive Version Number from previous job, and remove the leading v from it
+          # v1.2.3 => 1.2.3
+          # Add to environment variable for future use
+          version=$(echo "${{ steps.bump-version.outputs.tag}}" | sed "s/^v//")
+          echo "VERSION=${version}" >> $GITHUB_ENV
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.13.4'
+
+      - run: make buildfn
+
+      - name: "Upload Output Artifact"
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH}}
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: azure/login@v1.3.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: output
+
+      - name: "Prod environment deploy using azure functions action"
+        uses: azure/functions-action@v1.4.0
+        id: fa
+        with:
+          app-name: "RSP-FN-RecipeBot"
+          package: "."
