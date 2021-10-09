@@ -94,7 +94,7 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.WithFields(log.Fields{
-			"error": err,,
+			"error": err,
 		}).Warn("Error Reading Response")
 		return
 	}
