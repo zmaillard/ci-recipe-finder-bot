@@ -7,9 +7,9 @@ import (
 )
 
 type Config struct {
-	SearchService           string `env:"IndexAzureSearchService"`
-	SearchIndex             string `env:"IndexSearchIndex"`
-	SearchApiKey            string `env:"IndexSearchApiKey"`
+	SearchService           string `env:"SearchService"`
+	SearchIndex             string `env:"SearchIndex"`
+	SearchApiKey            string `env:"SearchAPIKey"`
 }
 var config *Config
 
