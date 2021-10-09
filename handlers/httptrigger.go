@@ -79,6 +79,9 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, queryVals.Get("Body"))
+	log.WithFields(log.Fields{
+		"url": url,
+	}).Warn("Building Url")
 	resp, err := http.Get(url)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -101,7 +104,7 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.WithFields(log.Fields{
 		"body": string(body),
-	}).Debug("Results From Search Service")
+	}).Warn("Results From Search Service")
 
 	searchRes := struct {
 		Value []SearchResult `json:"value"`
