@@ -99,8 +99,12 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.WithFields(log.Fields{
+		"body": string(body),
+	}).Debug("Results From Search Service")
+
 	searchRes := struct {
-		Value []SearchResult
+		Value []SearchResult `json:"value"`
 	} { }
 
 	err = json.Unmarshal(body, &searchRes)
