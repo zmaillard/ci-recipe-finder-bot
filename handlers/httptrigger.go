@@ -12,26 +12,6 @@ import (
 	"net/url"
 	"strings"
 )
-/*
-{
-    "@odata.context": "https://signsearchtest.search.windows.net/indexes('recipe-index')/$metadata#docs(*)",
-    "value": [
-        {
-            "@search.score": 7.641527,
-            "id": "13439125386506261573",
-            "issue": "107",
-            "months": [
-                "November",
-                "December"
-            ],
-            "year": 2010,
-            "recipe": "Classic Pot Roast",
-            "article": "Really Good Pot Roast",
-            "category": "Main Dish",
-            "page": 11,
-            "notes": ""
-        },
- */
 
 type SearchResult struct {
 	Score float64 `json:"@search.score"`
