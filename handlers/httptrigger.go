@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"ci-recipe-finder-bot/config"
+	"ci-recipe-finder-bot/index"
 	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -13,26 +14,11 @@ import (
 	"strings"
 )
 
-type SearchResult struct {
+type searchResult struct {
+	index.RecipeIndex
 	Score float64 `json:"@search.score"`
-	Id string`json:"id"`
-	Issue string `json:"issue"`
-	Months []string `json:"months"`
-	Year int`json:"year"`
-	Recipe string`json:"recipe"`
-	Article string`json:"article"`
-	Category string`json:"category"`
-	Page int`json:"page"`
-	Notes string`json:"notes"`
 }
 
-func (r SearchResult) String() string {
-	return fmt.Sprintf("%s %s, %v", r.Recipe, r.FormatMonths(), r.Year)
-}
-
-func (r SearchResult) FormatMonths() string {
-	return strings.Join(r.Months, "-")
-}
 
 func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	cfg := config.GetConfig()
@@ -87,7 +73,7 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	}).Warn("Results From Search Service")
 
 	searchRes := struct {
-		Value []SearchResult `json:"value"`
+		Value []searchResult `json:"value"`
 	} { }
 
 	err = json.Unmarshal(body, &searchRes)
