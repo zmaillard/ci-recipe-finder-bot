@@ -12,11 +12,3 @@ func main() {
 		panic(err)
 	}
 }
-
-
-/*
-http://localhost:8000
-http://localhost:5500
-http://localhost:3000
-https://ci.sagebrushgis.com
- */
