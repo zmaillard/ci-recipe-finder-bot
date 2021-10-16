@@ -108,7 +108,7 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 
 	if searchCount > 5 {
 		u, _ := url.Parse(cfg.SearchUIBaseUrl)
-		u.Path = path.Join(u.Path, "search?q=" + searchTerm)
+		u.Path = path.Join(u.Path, "search") + "?q=" + searchTerm
 		output = output +  "\nView More Results Here: " + u.String()
 	}
 
