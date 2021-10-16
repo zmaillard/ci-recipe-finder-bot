@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 )
 
@@ -43,11 +44,11 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchTerm := url.QueryEscape( queryVals.Get("Body"))
-	url:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, searchTerm)
+	searchUrl:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, searchTerm)
 	log.WithFields(log.Fields{
-		"url": url,
+		"url": searchUrl,
 	}).Warn("Building Url")
-	resp, err := http.Get(url)
+	resp, err := http.Get(searchUrl)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.WithFields(log.Fields{
@@ -103,12 +104,13 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 
 		output = strings.Join(outputArr, "\n")
 
-		if searchCount > 5 {
-			output = strings.Join(outputArr, "\nView More Results Here: https://ci.sagebrushgis.com/search?q=" + searchTerm)
-		}
 	}
 
-
+	if searchCount > 5 {
+		u, _ := url.Parse(cfg.SearchUIBaseUrl)
+		u.Path = path.Join(u.Path, "search?q=" + searchTerm)
+		output = output +  "\nView More Results Here: " + u.String()
+	}
 
 	client := twilio.NewRestClient()
 	params := &openapi.CreateMessageParams{}
