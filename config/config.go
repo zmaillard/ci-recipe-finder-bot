@@ -22,6 +22,8 @@ type Config struct {
 	Port     string `env:"DatabasePort"`
 	DbName   string `env:"DatabaseDbName"`
 	SslMode  string `env:"DatabaseSSLMode"`
+
+	SearchUIBaseUrl string `env:"SearchUIBaseUrl"`
 }
 var config *Config
 var db *sqlx.DB
