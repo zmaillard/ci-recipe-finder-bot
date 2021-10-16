@@ -103,12 +103,12 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 
 		output = strings.Join(outputArr, "\n")
 
-		if searchCount > 5 {
-			output = strings.Join(outputArr, "\nView More Results Here: https://ci.sagebrushgis.com/search?q=" + searchTerm)
-		}
 	}
 
 
+	if searchCount > 5 {
+		output = output +  "\nView More Results Here: https://ci.sagebrushgis.com/search?q=" + searchTerm
+	}
 
 	client := twilio.NewRestClient()
 	params := &openapi.CreateMessageParams{}
