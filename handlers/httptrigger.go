@@ -23,7 +23,6 @@ type searchResult struct {
 func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	cfg := config.GetConfig()
 
-	log.Debug("In Handler")
 	// read request body
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
