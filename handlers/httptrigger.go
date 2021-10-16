@@ -22,8 +22,7 @@ type searchResult struct {
 
 func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	cfg := config.GetConfig()
-	// set the response header as JSON
-	//w.Header().Set("Content-Type", "application/json")
+
 	log.Debug("In Handler")
 	// read request body
 	reqBody, err := ioutil.ReadAll(r.Body)
@@ -44,7 +43,8 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, queryVals.Get("Body"))
+	searchTerm := url.QueryEscape( queryVals.Get("Body"))
+	url:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, searchTerm)
 	log.WithFields(log.Fields{
 		"url": url,
 	}).Warn("Building Url")
@@ -103,7 +103,12 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		output = strings.Join(outputArr, "\n")
+
+		if searchCount > 5 {
+			output = strings.Join(outputArr, "\nView More Results Here: https://ci.sagebrushgis.com/search?q=" + searchTerm)
+		}
 	}
+
 
 
 	client := twilio.NewRestClient()
