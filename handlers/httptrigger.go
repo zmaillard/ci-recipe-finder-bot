@@ -3,11 +3,13 @@ package handlers
 import (
 	"ci-recipe-finder-bot/config"
 	"ci-recipe-finder-bot/index"
+	"embed"
 	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	twilio "github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -15,11 +17,30 @@ import (
 	"strings"
 )
 
+//go:embed layout.html.tmpl
+var templateFS embed.FS
+
+
+
 type searchResult struct {
 	index.RecipeIndex
 	Score float64 `json:"@search.score"`
 }
 
+func HelpHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFS(templateFS, "layout.html.tmpl"))
+
+	err := tmpl.Execute(w, nil)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Warn("invalid Template")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
 
 func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	cfg := config.GetConfig()

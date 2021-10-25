@@ -19,6 +19,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/receivesms", handlers.ReceiveSMSHandler)
+	mux.HandleFunc("/api/help", handlers.HelpHandler)
 	log.Printf("About to listen on %s. Go to https://127.0.0.1%s/", listenAddr, listenAddr)
 	log.Fatal(http.ListenAndServe(listenAddr, mux))
 }
