@@ -1,6 +1,115 @@
-<html>
-  <title>Cooks Illustrated Recipe Search</title>
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cooks Illustrated Recipe Search</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+      html,body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+.hero.is-info {
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ), url('https://ci.sagebrushgis.com/assets/kara-eads-AemWnTSPxoE-unsplash.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.hero .nav, .hero.is-success .nav {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.hero .subtitle {
+  padding: 3rem 0;
+  line-height: 1.5;
+}
+    </style>
+  </head>
   <body>
-    Test
+    <section class="hero is-info is-fullheight">
+      <div class="hero-head">
+          <div class="hero-body">
+              <div class="container has-text-centered">
+                  <div class="column is-6 is-offset-3">
+                      <h1 class="title">
+                         Cooks Illustrated Recipe Finder 
+                      </h1>
+                      <h2 class="subtitle">
+                        Find your favorite Cooks Illustrated Recipe Using Your Phone or Computer
+                      </h2>
+                      <div class="box">
+                              Text A Recipe Search To {{.PhoneNumber}}
+                              <br/>
+                              or
+                              <br/>
+                              Visit <a href="{{.PublicUrl}}">{{.PublicUrl}}</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+  </section>
+    <section class="hero is-fullheight">
+      <div class="hero-head">
+          <div class="hero-body">
+              <div class="container has-text-centered">
+                <div class="columns">
+                  <div class="column is-half">
+                      Say you are thinking of making <b>Soup</b> for dinner.  Send a text message of <b>Soup</b> to {{.PhoneNumber}}
+                  </div>
+                  <div class="column is-half">
+                <figure>
+                <img src="https://ci.sagebrushgis.com/assets/IMG_0554_crop.png">
+                </figure>
+
+                  </div>
+                </div>
+              </div>
+          </div>
+
+  </section>
+    <section class="hero is-fullheight">
+      <div class="hero-head">
+          <div class="hero-body">
+              <div class="container has-text-centered">
+                <div class="columns">
+                  <div class="column is-half">
+                <figure >
+                <img src="https://ci.sagebrushgis.com/assets/IMG_0555_crop.png">
+                </figure>
+              </div>
+                  <div class="column is-half">
+                     The recipe bot will send back the top 5 matches to your search request.  If a recipe has more than 5 matches, you will also receive a link to view all the recipes using a web browser. 
+                  </div>
+              </div>
+              </div>
+          </div>
+
+  </section>
+    <section class="hero is-fullheight">
+      <div class="hero-head">
+          <div class="hero-body">
+              <div class="container has-text-centered">
+                <div class="columns">
+                  <div class="column is-half">
+                      Or if your phone screen is too small, view on your desktop <a href="{{.PublicUrl}}">here</a>.
+                  </div>
+                    <div class="column is-half">
+                        <figure >
+                            <img src="https://ci.sagebrushgis.com/assets/IMG_0556_crop.png">
+                        </figure>
+                    </div>
+              </div>
+              </div>
+          </div>
+
+  </section>
+Photo by <a href="https://unsplash.com/@karaeads?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Kara Eads</a> on <a href="https://unsplash.com/s/photos/recipe?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
   </body>
 </html>
+
+  

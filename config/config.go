@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	SearchService           string `env:"SearchService"`
-	SearchIndex             string `env:"SearchIndex"`
-	SearchApiKey            string `env:"SearchAPIKey"`
+	SearchService string `env:"SearchService"`
+	SearchIndex   string `env:"SearchIndex"`
+	SearchApiKey  string `env:"SearchAPIKey"`
 
 	Username string `env:"DatabaseUsername"`
 	Password string `env:"DatabasePassword"`
@@ -24,7 +24,11 @@ type Config struct {
 	SslMode  string `env:"DatabaseSSLMode"`
 
 	SearchUIBaseUrl string `env:"SearchUIBaseUrl"`
+
+	PhoneNumber string `env:"PhoneNumber"`
+	PublicUrl   string `env:"PublicUrl"`
 }
+
 var config *Config
 var db *sqlx.DB
 var err error
@@ -52,9 +56,7 @@ func Init() {
 		log.Info("Using Existing Database")
 		return
 	}
-	log.WithFields(log.Fields{
-		"uri": dbURI,
-	}).Info("Connecting To Database")
+
 	db, err = sqlx.Open("postgres", dbURI)
 	db.SetMaxOpenConns(20)
 	db.SetMaxIdleConns(5)
@@ -78,7 +80,6 @@ func Init() {
 func GetConfig() *Config {
 	return config
 }
-
 
 func GetDB() *sqlx.DB {
 	return db

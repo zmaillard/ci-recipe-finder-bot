@@ -27,10 +27,20 @@ type searchResult struct {
 	Score float64 `json:"@search.score"`
 }
 
+type HelpTemplateModel struct {
+	PhoneNumber string
+	PublicUrl string
+}
+
 func HelpHandler(w http.ResponseWriter, r *http.Request) {
+	cfg := config.GetConfig()
 	tmpl := template.Must(template.ParseFS(templateFS, "layout.html.tmpl"))
 
-	err := tmpl.Execute(w, nil)
+
+	err := tmpl.Execute(w, HelpTemplateModel{
+		PublicUrl: cfg.PublicUrl,
+		PhoneNumber: cfg.PhoneNumber,
+	})
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.WithFields(log.Fields{
@@ -39,7 +49,6 @@ func HelpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 }
 
 func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {

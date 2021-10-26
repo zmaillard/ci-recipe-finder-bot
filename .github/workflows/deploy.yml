@@ -66,3 +66,20 @@ jobs:
         with:
           app-name: "RSP-FN-RecipeBot"
           package: "."
+
+  deploy-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout github action"
+        uses: actions/checkout@v2.3.4
+
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-west-2"
+
+      - name: Upload S3
+        run: |
+          aws s3 sync assets/ s3://ci.sagebrushgis.com/assets/
