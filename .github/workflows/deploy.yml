@@ -83,4 +83,4 @@ jobs:
 
       - name: Upload S3
         run: |
-          aws s3 sync assets/ s3://ci.sagebrushgis.com/assets/
+          aws s3 sync assets/ s3://recipesear.ch/assets/
