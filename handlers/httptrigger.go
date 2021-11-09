@@ -83,9 +83,12 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	if strings.ToLower(searchTerm) == "help" {
 		params.SetBody(cfg.HelpPage)
 		return
+	} else if strings.ToLower(searchTerm) == "web" {
+		params.SetBody(cfg.SearchUIBaseUrl)
+		return
 	}
 
-	searchUrl:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, searchTerm)
+		searchUrl:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, searchTerm)
 	log.WithFields(log.Fields{
 		"url": searchUrl,
 	}).Warn("Building Url")
