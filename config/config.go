@@ -27,6 +27,7 @@ type Config struct {
 
 	PhoneNumber string `env:"PhoneNumber"`
 	PublicUrl   string `env:"PublicUrl"`
+	HelpPage    string `env:"HelpPage"`
 }
 
 var config *Config
