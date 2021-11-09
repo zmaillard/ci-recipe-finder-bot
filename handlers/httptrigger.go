@@ -80,7 +80,7 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	params.SetTo(queryVals.Get("From"))
 	params.SetFrom(queryVals.Get("To"))
 
-	if strings.ToLower(searchTerm) == "show help" {
+	if strings.ToLower(searchTerm) == url.QueryEscape("show help") {
 		params.SetBody(cfg.HelpPage)
 	} else if strings.ToLower(searchTerm) == "web" {
 		params.SetBody(cfg.SearchUIBaseUrl)
