@@ -80,12 +80,10 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	params.SetTo(queryVals.Get("From"))
 	params.SetFrom(queryVals.Get("To"))
 
-	if strings.ToLower(searchTerm) == "help" {
+	if strings.ToLower(searchTerm) == "show help" {
 		params.SetBody(cfg.HelpPage)
-		return
 	} else if strings.ToLower(searchTerm) == "web" {
 		params.SetBody(cfg.SearchUIBaseUrl)
-		return
 	} else {
 
 		searchUrl := fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, searchTerm)
