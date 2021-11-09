@@ -42,7 +42,7 @@
                         Find your favorite Cooks Illustrated Recipe Using Your Phone or Computer
                       </h2>
                       <div class="box">
-                              Text A Recipe Search To {{.PhoneNumber}}
+                              Text A Recipe Search To <a href="tel:{{.PhoneNumber}}">{{.PhoneNumber}}</a>
                               <br/>
                               or
                               <br/>
@@ -59,7 +59,7 @@
               <div class="container has-text-centered">
                 <div class="columns">
                   <div class="column is-half">
-                      Say you are thinking of making <b>Soup</b> for dinner.  Send a text message of <b>Soup</b> to {{.PhoneNumber}}
+                      Say you are thinking of making <b>Soup</b> for dinner.  Send a text message of <code>Soup</code> to {{.PhoneNumber}}
                   </div>
                   <div class="column is-half">
                 <figure>
@@ -114,7 +114,7 @@
                 <div class="container has-text-centered">
                     <div class="columns">
                         <div class="column is-half">
-                            The address to the web search tool is {{.PublicUrl}}.  Or if you forget, simply text <em>web</em> to the Recipe Bot.
+                            The address to the web search tool is {{.PublicUrl}}.  Or if you forget, simply text <code>web</code> to the Recipe Bot.
                         </div>
                         <div class="column is-half">
                             <figure >
@@ -137,7 +137,7 @@
                             </figure>
                         </div>
                         <div class="column is-half">
-                            To return to this page simply text <em>show help</em> to the Recipe Bot.
+                            To return to this page simply text <code>show help</code> to the Recipe Bot.
                         </div>
                     </div>
                 </div>
