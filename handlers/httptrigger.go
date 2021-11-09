@@ -74,6 +74,17 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	searchTerm := url.QueryEscape( queryVals.Get("Body"))
+
+	client := twilio.NewRestClient()
+	params := &openapi.CreateMessageParams{}
+	params.SetTo(queryVals.Get("From"))
+	params.SetFrom(queryVals.Get("To"))
+
+	if strings.ToLower(searchTerm) == "help" {
+		params.SetBody(cfg.HelpPage)
+		return
+	}
+
 	searchUrl:= fmt.Sprintf("https://%s.search.windows.net/indexes/%s/docs?api-version=2019-05-06&api-key=%s&search=%s", cfg.SearchService, cfg.SearchIndex, cfg.SearchApiKey, searchTerm)
 	log.WithFields(log.Fields{
 		"url": searchUrl,
@@ -142,10 +153,6 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 		output = output +  "\nView More Results Here: " + u.String() + "?q=" + searchTerm
 	}
 
-	client := twilio.NewRestClient()
-	params := &openapi.CreateMessageParams{}
-	params.SetTo(queryVals.Get("From"))
-	params.SetFrom(queryVals.Get("To"))
 	params.SetBody(output)
 
 	_, err = client.ApiV2010.CreateMessage(params)
