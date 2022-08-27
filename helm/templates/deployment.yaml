@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "..fullname" . }}
+  labels:
+    {{- include "..labels" . | nindent 4 }}
+    - recipe-bot
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      - recipe-bot
+      {{- include "..selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        - recipe-bot
+        {{- include "..selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "..serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /heathz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          env:
+            - name: HelpPage
+              valueFrom:
+                {{- toYaml .Values.configuration.helpPage | nindent 16 }}
+            - name: SearchAPIKey
+              valueFrom:
+                {{- toYaml .Values.configuration.searchApiKey | nindent 16 }}
+            - name: PhoneNumber
+              valueFrom:
+                {{- toYaml .Values.configuration.phoneNumber | nindent 16 }}
+            - name: PublicUrl
+              valueFrom:
+                {{- toYaml .Values.configuration.publicUrl | nindent 16 }}
+            - name: SearchUIBaseUrl
+              valueFrom:
+                {{- toYaml .Values.configuration.publicUrl | nindent 16 }}
+            - name: SearchIndex
+              valueFrom:
+                {{- toYaml .Values.configuration.searchIndex | nindent 16 }}
+            - name: SearchService
+              valueFrom:
+                {{- toYaml .Values.configuration.searchService | nindent 16 }}
+            - name: TWILIO_ACCOUNT_SID
+              valueFrom:
+                {{- toYaml .Values.configuration.twilioSid | nindent 16 }}
+            - name: TWILIO_AUTH_TOKEN
+              valueFrom:
+                {{- toYaml .Values.configuration.twilioAuthToken | nindent 16 }}
+            - name: DatabaseUsername
+              valueFrom:
+                {{- toYaml .Values.configuration.databaseUserName | nindent 16 }}
+            - name: DatabaseEngine
+              valueFrom:
+                {{- toYaml .Values.configuration.databaseEngine | nindent 16 }}
+            - name: DatabasePassword
+              valueFrom:
+                {{- toYaml .Values.configuration.databasePassword | nindent 16 }}
+            - name: DatabaseHost
+              valueFrom:
+                {{- toYaml .Values.configuration.databaseHost | nindent 16 }}
+            - name: DatabaseDbName
+              valueFrom:
+                {{- toYaml .Values.configuration.databaseDbName | nindent 16 }}
+            - name: DatabaseSslMode
+              valueFrom:
+                {{- toYaml .Values.configuration.databaseDbName | nindent 16 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

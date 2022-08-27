@@ -164,6 +164,7 @@ func buildRecipeQuery() (string, []interface{}) {
 }
 
 func RefreshIndex() error {
+	config.Init()
 	conn := config.GetDB()
 	query, args := buildRecipeQuery()
 	rows, err := conn.Queryx(query, args...)

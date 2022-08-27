@@ -3,23 +3,35 @@ package main
 import (
 	"ci-recipe-finder-bot/config"
 	"ci-recipe-finder-bot/handlers"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
+	keyauth "github.com/iwpnd/fiber-key-auth"
 	log "github.com/sirupsen/logrus"
-	"net/http"
 	"os"
+	"os/signal"
 )
 
 func main() {
 	config.Init()
 
-	listenAddr := ":8080"
-	if val, ok := os.LookupEnv("FUNCTIONS_CUSTOMHANDLER_PORT"); ok {
-		listenAddr = ":" + val
-	}
+	engine := html.New("./static", ".html")
 
-	mux := http.NewServeMux()
+	app := fiber.New(fiber.Config{Views: engine})
+	api := app.Group("/api", keyauth.New())
 
-	mux.HandleFunc("/api/receivesms", handlers.ReceiveSMSHandler)
-	mux.HandleFunc("/api/help", handlers.HelpHandler)
-	log.Printf("About to listen on %s. Go to https://127.0.0.1%s/", listenAddr, listenAddr)
-	log.Fatal(http.ListenAndServe(listenAddr, mux))
+	api.Post("/receivesms", handlers.ReceiveSMSHandler)
+	api.Get("/help", handlers.HelpHandler)
+
+	app.Get("/healthz", func(ctx *fiber.Ctx) error {
+		return ctx.SendStatus(200)
+	})
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		app.Shutdown()
+	}()
+
+	log.Fatal(app.Listen(":3000"))
 }

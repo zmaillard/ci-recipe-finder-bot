@@ -3,13 +3,12 @@ package handlers
 import (
 	"ci-recipe-finder-bot/config"
 	"ci-recipe-finder-bot/index"
-	"embed"
 	"encoding/json"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 	twilio "github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -17,63 +16,33 @@ import (
 	"strings"
 )
 
-//go:embed layout.html.tmpl
-var templateFS embed.FS
-
-
-
 type searchResult struct {
 	index.RecipeIndex
 	Score float64 `json:"@search.score"`
 }
 
-type HelpTemplateModel struct {
-	PhoneNumber string
-	PublicUrl string
-}
-
-func HelpHandler(w http.ResponseWriter, r *http.Request) {
+func HelpHandler(c *fiber.Ctx) error {
 	cfg := config.GetConfig()
-	tmpl := template.Must(template.ParseFS(templateFS, "layout.html.tmpl"))
 
-
-	err := tmpl.Execute(w, HelpTemplateModel{
-		PublicUrl: cfg.PublicUrl,
-		PhoneNumber: cfg.PhoneNumber,
+	return c.Render("layout", fiber.Map{
+		"PublicUrl":   cfg.PublicUrl,
+		"PhoneNumber": cfg.PhoneNumber,
 	})
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Warn("invalid Template")
-		return
-	}
 
 }
 
-func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
+func ReceiveSMSHandler(c *fiber.Ctx) error {
 	cfg := config.GetConfig()
 
-	// read request body
-	reqBody, err := ioutil.ReadAll(r.Body)
+	queryVals, err := url.ParseQuery(string(c.Body()))
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Warn("invalid payload")
-		return
+		return c.SendStatus(http.StatusBadRequest)
 	}
 
-	queryVals, err := url.ParseQuery(string(reqBody))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Warn("invalid payload")
-		return
-	}
-
-	searchTerm := url.QueryEscape( queryVals.Get("Body"))
+	searchTerm := url.QueryEscape(queryVals.Get("Body"))
 
 	client := twilio.NewRestClient()
 	params := &openapi.CreateMessageParams{}
@@ -92,22 +61,20 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 		}).Warn("Building Url")
 		resp, err := http.Get(searchUrl)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
 			log.WithFields(log.Fields{
 				"error": err,
 			}).Warn("Error Getting Response")
-			return
+			return c.SendStatus(http.StatusBadRequest)
 		}
 		defer resp.Body.Close()
 
 		// Read body from response
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
 			log.WithFields(log.Fields{
 				"error": err,
 			}).Warn("Error Reading Response")
-			return
+			return c.SendStatus(http.StatusBadRequest)
 		}
 
 		log.WithFields(log.Fields{
@@ -120,12 +87,11 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = json.Unmarshal(body, &searchRes)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
 			log.WithFields(log.Fields{
 				"error": err,
 				"body":  string(body),
 			}).Warn("Error Parsing Response")
-			return
+			return c.SendStatus(http.StatusBadRequest)
 		}
 
 		var output string
@@ -161,10 +127,10 @@ func ReceiveSMSHandler(w http.ResponseWriter, r *http.Request) {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Warn("Could Not Send Message")
-		w.WriteHeader(http.StatusBadRequest)
+		return c.SendStatus(http.StatusBadRequest)
 	} else {
 		log.Debug("Success")
-		w.WriteHeader(http.StatusOK)
+		return c.SendStatus(http.StatusOK)
 	}
 
 }

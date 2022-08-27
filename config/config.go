@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
@@ -28,6 +29,11 @@ type Config struct {
 	PhoneNumber string `env:"PhoneNumber"`
 	PublicUrl   string `env:"PublicUrl"`
 	HelpPage    string `env:"HelpPage"`
+
+	TwilioFromNumber string `env:"TwilioFromNumber"`
+	TwilioToNumbers  string `env:"TwilioToNumbers"`
+	TwilioUser       string `env:"TwilioUser"`
+	TwilioApiKey     string `env:"TwilioApiKey"`
 }
 
 var config *Config
@@ -84,4 +90,15 @@ func GetConfig() *Config {
 
 func GetDB() *sqlx.DB {
 	return db
+}
+
+func (c Config) BuildDatabaseUrl() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:5432/%s", c.Username, c.Password, c.Host, c.DbName)
+}
+func (c Config) GetTwilioToNumbers() []string {
+	return strings.Split(c.TwilioToNumbers, "^")
+}
+
+func (c Config) BuildTwilioUrl() string {
+	return fmt.Sprintf("https://api.twilio.com/2010-04-01/Accounts/%s/Messages", c.TwilioUser)
 }
